@@ -1,9 +1,11 @@
 package com.example.slezica.dailyself.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import butterknife.BindView;
 import com.example.slezica.dailyself.R;
@@ -26,6 +28,11 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected int getMenuResource() {
+        return R.menu.main;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -33,6 +40,18 @@ public class MainActivity extends BaseActivity {
 
         pursuitList.setAdapter(pursuitAdapter);
         pursuitList.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.home_action_add:
+                startActivity(new Intent(this, NewPursuitActivity.class));
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
