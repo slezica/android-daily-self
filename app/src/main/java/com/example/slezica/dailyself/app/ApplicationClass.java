@@ -3,6 +3,7 @@ package com.example.slezica.dailyself.app;
 import android.app.Application;
 import com.example.slezica.dailyself.BuildConfig;
 import com.example.slezica.dailyself.model.Models;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -19,7 +20,7 @@ import java.util.concurrent.Executors;
 
 public class ApplicationClass extends Application {
 
-    public static final int DB_VERSION = 2;
+    public static final int DB_VERSION = 4;
 
     protected ExecutorService backgroundExecutor;
     protected Scheduler backgroundScheduler;
@@ -51,6 +52,8 @@ public class ApplicationClass extends Application {
         dataStore = ReactiveSupport.toReactiveStore(
                 new EntityDataStore<Persistable>(configuration)
         );
+
+        AndroidThreeTen.init(this);
     }
 
     public Scheduler getBackgroundScheduler() {

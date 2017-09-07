@@ -24,6 +24,11 @@
                 android:name=".ui.NewPursuitActivity"
                 android:parentActivityName=".ui.MainActivity"
                 />
+
+        <activity
+                android:name=".ui.NewPursuitEntryActivity"
+                android:parentActivityName=".ui.MainActivity"
+                />
     </application>
 
 </manifest>

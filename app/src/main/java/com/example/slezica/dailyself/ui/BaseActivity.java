@@ -1,5 +1,7 @@
 package com.example.slezica.dailyself.ui;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
@@ -44,6 +46,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (menuRes != 0) {
             getMenuInflater().inflate(menuRes, menu);
+
+            for (int i = 0; i < menu.size(); i++) {
+                menu.getItem(i)
+                        .getIcon()
+                        .mutate()
+                        .setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+            }
         }
 
         return super.onCreateOptionsMenu(menu);

@@ -28,12 +28,12 @@ public class NewPursuitActivity extends BaseActivity {
 
     @OnClick(R.id.submit)
     protected void onSubmit() {
-        Pursuit p = new Pursuit();
+        Pursuit pursuit = new Pursuit();
 
-        p.setName(name.getText().toString());
+        pursuit.setName(name.getText().toString());
 
         final Single<Pursuit> op = dataStore
-                .insert(p)
+                .insert(pursuit)
                 .doOnSuccess(i -> finish());
 
         subscribeTo(op);
