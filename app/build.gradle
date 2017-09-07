@@ -48,6 +48,8 @@ dependencies {
 
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
 
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+
     testCompile 'junit:junit:4.12'
 }
 
