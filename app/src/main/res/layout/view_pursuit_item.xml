@@ -18,6 +18,12 @@
             tools:text="Pursuit"
             />
 
+    <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:visibility="gone"
+            />
 
     <LinearLayout
             android:layout_width="match_parent"
