@@ -79,8 +79,7 @@ public class PursuitItem extends BaseView {
 
         int index = 0;
         for (PursuitEntry entry: entries) {
-            index++;
-            chartEntries.add(new Entry(index, index));
+            chartEntries.add(new Entry(index++, entry.getScore()));
         }
 
         final LineDataSet dataSet = new LineDataSet(chartEntries, "Scores");
@@ -109,8 +108,8 @@ public class PursuitItem extends BaseView {
 
             text = TextUtils.concat(
                     new RichText(when).setBold(),
-                    ": ",
-                    entry.getComment()
+                    ": " + entry.getScore() + " ",
+                    new RichText(entry.getComment()).setItalic()
             );
 
         } else {
