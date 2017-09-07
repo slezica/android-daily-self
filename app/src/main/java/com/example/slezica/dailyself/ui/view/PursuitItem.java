@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
 import butterknife.BindView;
@@ -14,6 +15,7 @@ import com.example.slezica.dailyself.model.Pursuit;
 import com.example.slezica.dailyself.model.PursuitEntry;
 import com.example.slezica.dailyself.utils.Callback1;
 import com.example.slezica.dailyself.utils.RichText;
+import org.threeten.bp.ZonedDateTime;
 
 public class PursuitItem extends BaseView {
 
@@ -57,18 +59,26 @@ public class PursuitItem extends BaseView {
         final CharSequence text;
 
         if (entry != null) {
+            final String when = formatDatetime(entry.getDatetime());
+
             text = TextUtils.concat(
-                    new RichText("Latest: ").setBold(),
+                    new RichText(when).setBold(),
+                    ": ",
                     entry.getComment()
             );
+
         } else {
             text = new RichText("No entries").setItalic();
         }
-        System.out.println("jere setting " + text.toString());
+
         latestEntry.setText(text);
     }
 
     public void setOnAddEntryClick(Callback1<Pursuit> onAddEntryClick) {
         this.onAddEntryClick = onAddEntryClick;
+    }
+
+    private String formatDatetime(ZonedDateTime datetime) {
+        return DateUtils.getRelativeTimeSpanString(datetime.toEpochSecond() * 1000).toString();
     }
 }
