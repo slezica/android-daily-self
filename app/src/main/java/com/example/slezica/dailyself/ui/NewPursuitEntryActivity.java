@@ -8,7 +8,6 @@ import com.example.slezica.dailyself.R;
 import com.example.slezica.dailyself.model.Pursuit;
 import com.example.slezica.dailyself.model.PursuitEntry;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import org.threeten.bp.ZonedDateTime;
 
 public class NewPursuitEntryActivity extends BaseActivity {
@@ -42,10 +41,9 @@ public class NewPursuitEntryActivity extends BaseActivity {
         final Observable<Pursuit> observable = dataStore.select(Pursuit.class)
                 .where(Pursuit.ID.eq(pursuitId))
                 .get()
-                .observable()
-                .doOnNext(this::onPursuitLoaded);
+                .observable();
 
-        subscribeTo(observable);
+        subscribeTo(observable, this::onPursuitLoaded);
     }
 
     protected void onPursuitLoaded(Pursuit pursuit) {
@@ -62,10 +60,6 @@ public class NewPursuitEntryActivity extends BaseActivity {
         entry.setScore(Integer.parseInt(score.getText().toString()));
         entry.setComment(comment.getText().toString());
 
-        final Single<PursuitEntry> op = dataStore
-                .insert(entry)
-                .doOnSuccess(i -> finish());
-
-        subscribeTo(op);
+        subscribeTo(dataStore.insert(entry), this::finish);
     }
 }

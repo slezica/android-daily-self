@@ -17,6 +17,8 @@ import com.example.slezica.dailyself.utils.Callback1;
 import com.example.slezica.dailyself.utils.RichText;
 import org.threeten.bp.ZonedDateTime;
 
+import java.util.List;
+
 public class PursuitItem extends BaseView {
 
     @BindView(R.id.name)
@@ -24,6 +26,9 @@ public class PursuitItem extends BaseView {
 
     @BindView(R.id.latest_entry)
     TextView latestEntry;
+
+//    @BindView(R.id.chart)
+//    LineChart chart;
 
     Pursuit pursuit;
     Callback1<Pursuit> onAddEntryClick;
@@ -55,7 +60,14 @@ public class PursuitItem extends BaseView {
         name.setText(pursuit.getName());
     }
 
-    public void setLatestEntry(PursuitEntry entry) {
+    public void setPursuitEntries(List<PursuitEntry> entries) {
+        if (entries.size() == 0) return;
+        if (! entries.get(0).getPursuit().equals(pursuit)) return;
+
+        setLatestEntry(entries.get(entries.size() - 1));
+    }
+
+    private void setLatestEntry(PursuitEntry entry) {
         final CharSequence text;
 
         if (entry != null) {
@@ -71,6 +83,7 @@ public class PursuitItem extends BaseView {
             text = new RichText("No entries").setItalic();
         }
 
+        System.out.println("Setting text" + text.toString());
         latestEntry.setText(text);
     }
 

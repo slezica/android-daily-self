@@ -6,7 +6,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import com.example.slezica.dailyself.R;
 import com.example.slezica.dailyself.model.Pursuit;
-import io.reactivex.Single;
 
 public class NewPursuitActivity extends BaseActivity {
 
@@ -29,13 +28,8 @@ public class NewPursuitActivity extends BaseActivity {
     @OnClick(R.id.submit)
     protected void onSubmit() {
         Pursuit pursuit = new Pursuit();
-
         pursuit.setName(name.getText().toString());
 
-        final Single<Pursuit> op = dataStore
-                .insert(pursuit)
-                .doOnSuccess(i -> finish());
-
-        subscribeTo(op);
+        subscribeTo(dataStore.insert(pursuit), this::finish);
     }
 }

@@ -16,6 +16,7 @@ import com.example.slezica.dailyself.model.PursuitEntry;
 import com.example.slezica.dailyself.ui.view.PursuitItem;
 import com.example.slezica.dailyself.ui.view.ReactiveQueryAdapter;
 import com.example.slezica.dailyself.ui.view.ViewHolder;
+import io.reactivex.Observable;
 import io.requery.reactivex.ReactiveResult;
 
 public class MainActivity extends BaseActivity {
@@ -105,14 +106,15 @@ public class MainActivity extends BaseActivity {
             itemView.setPursuit(item);
             itemView.setOnAddEntryClick(MainActivity.this::onPursuitAddEntryClick);
 
-            final PursuitEntry latestEntry = dataStore.select(PursuitEntry.class)
+            final Observable<ReactiveResult<PursuitEntry>> entries = dataStore
+                    .select(PursuitEntry.class)
                     .where(PursuitEntry.PURSUIT.eq(item))
-                    .orderBy(PursuitEntry.DATETIME.desc())
-                    .limit(1)
+                    .orderBy(PursuitEntry.DATETIME.asc())
+                    .limit(30)
                     .get()
-                    .firstOrNull();
+                    .observableResult();
 
-            itemView.setLatestEntry(latestEntry);
+            subscribeTo(entries, result -> itemView.setPursuitEntries(result.toList()));
         }
 
         @Override

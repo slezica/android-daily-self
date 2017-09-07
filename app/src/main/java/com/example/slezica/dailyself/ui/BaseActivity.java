@@ -10,10 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import butterknife.ButterKnife;
 import com.example.slezica.dailyself.app.ApplicationClass;
+import com.example.slezica.dailyself.utils.Callback;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.requery.Persistable;
 import io.requery.reactivex.ReactiveEntityStore;
 
@@ -68,15 +70,23 @@ public abstract class BaseActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    protected void subscribeTo(Single<?> single) {
-        subscribeTo(single.toObservable());
+    protected <T> void subscribeTo(Single<T> single, Callback onSuccess) {
+        subscribeTo(single.toObservable(), i -> onSuccess.call());
     }
 
-    protected void subscribeTo(Observable<?> observable) {
+    protected <T> void subscribeTo(Single<T> single, Consumer<T> onSuccess) {
+        subscribeTo(single.toObservable(), onSuccess);
+    }
+
+    protected <T> void subscribeTo(Observable<T> observable, Callback onNext) {
+        subscribeTo(observable, i -> onNext.call());
+    }
+
+    protected <T> void subscribeTo(Observable<T> observable, Consumer<T> onNext) {
         final Disposable sub = observable
                 .subscribeOn(app.getBackgroundScheduler())
                 .observeOn(app.getMainScheduler())
-                .subscribe(next -> {}, this::handleError);
+                .subscribe(onNext, this::handleError);
 
         subs.add(sub);
     }
