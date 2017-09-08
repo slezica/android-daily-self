@@ -63,18 +63,30 @@ public class PursuitItem extends BaseView {
 
     public void setPursuit(Pursuit pursuit) {
         this.pursuit = pursuit;
-        name.setText(pursuit.getName());
+
+        if (pursuit != null) {
+            name.setText(pursuit.getName());
+        }
     }
 
     public void setPursuitEntries(List<PursuitEntry> entries) {
-        if (entries.size() == 0) return;
-        if (! entries.get(0).getPursuit().equals(pursuit)) return;
+        if (entries.size() == 0) {
+            setLatestEntry(null);
+            setChartEntries(null);
+            return;
+        }
 
         setChartEntries(entries);
         setLatestEntry(entries.get(entries.size() - 1));
     }
 
     private void setChartEntries(List<PursuitEntry> entries) {
+        if (entries == null || entries.size() < 2) {
+            chart.clear();
+            chart.setVisibility(View.GONE);
+            return;
+        }
+
         final List<Entry> chartEntries = new ArrayList<Entry>();
 
         int index = 0;
@@ -116,7 +128,6 @@ public class PursuitItem extends BaseView {
             text = new RichText("No entries").setItalic();
         }
 
-        System.out.println("Setting text" + text.toString());
         latestEntry.setText(text);
     }
 

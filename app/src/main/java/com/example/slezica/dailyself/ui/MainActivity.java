@@ -14,10 +14,11 @@ import com.example.slezica.dailyself.R;
 import com.example.slezica.dailyself.model.Pursuit;
 import com.example.slezica.dailyself.model.PursuitEntry;
 import com.example.slezica.dailyself.ui.view.PursuitItem;
-import com.example.slezica.dailyself.ui.view.ReactiveQueryAdapter;
-import com.example.slezica.dailyself.ui.view.ViewHolder;
+import com.example.slezica.dailyself.utils.ReactiveAdapter;
 import io.reactivex.Observable;
 import io.requery.reactivex.ReactiveResult;
+
+import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
@@ -68,12 +69,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        pursuitAdapter.pause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
         pursuitAdapter.stop();
     }
 
@@ -84,42 +79,60 @@ public class MainActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    private class PursuitAdapter extends ReactiveQueryAdapter<Pursuit, PursuitItem> {
+    private class PursuitData {
+        public PursuitData(Pursuit pursuit, List<PursuitEntry> entries) {
+            this.pursuit = pursuit;
+            this.entries = entries;
+        }
+
+        Pursuit pursuit;
+        List<PursuitEntry> entries;
+    }
+
+    private class PursuitAdapter extends ReactiveAdapter<Pursuit, PursuitData, PursuitItem> {
 
         PursuitAdapter(Context context) {
             super(context);
         }
 
         @Override
-        public ReactiveResult<Pursuit> performQuery() {
-            return dataStore.select(Pursuit.class).get();
+        public Observable<List<Pursuit>> getItems() {
+            return dataStore.select(Pursuit.class)
+                    .get()
+                    .observableResult()
+                    .map(ReactiveResult::toList);
         }
 
         @Override
-        public void onBindViewHolder(Pursuit item, ViewHolder<PursuitItem> holder, int position) {
-            final PursuitItem itemView = holder.getView();
-
-            itemView.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-            ));
-
-            itemView.setPursuit(item);
-            itemView.setOnAddEntryClick(MainActivity.this::onPursuitAddEntryClick);
-
-            final Observable<ReactiveResult<PursuitEntry>> entries = dataStore
+        public Observable<PursuitData> getItemData(Pursuit item) {
+            return dataStore
                     .select(PursuitEntry.class)
                     .where(PursuitEntry.PURSUIT.eq(item))
                     .orderBy(PursuitEntry.DATETIME.asc())
                     .limit(30)
                     .get()
-                    .observableResult();
-
-            subscribeTo(entries, result -> itemView.setPursuitEntries(result.toList()));
+                    .observableResult()
+                    .map(ReactiveResult::toList)
+                    .map(entries -> new PursuitData(item, entries));
         }
 
         @Override
-        public ViewHolder<PursuitItem> onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder<>(new PursuitItem(parent.getContext()));
+        public PursuitItem onCreateView(ViewGroup parent) {
+            return new PursuitItem(parent.getContext());
+        }
+
+        @Override
+        public void onBindView(PursuitItem itemView, PursuitData itemData) {
+            itemView.setPursuit(itemData.pursuit);
+            itemView.setPursuitEntries(itemData.entries);
+
+            itemView.setOnAddEntryClick(MainActivity.this::onPursuitAddEntryClick);
+        }
+
+        @Override
+        public void onUnbindView(PursuitItem itemView) {
+            itemView.setPursuit(null);
+            itemView.setPursuitEntries(null);
         }
     }
 }
