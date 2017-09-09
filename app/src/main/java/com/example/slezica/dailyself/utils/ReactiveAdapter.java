@@ -64,7 +64,16 @@ public abstract class ReactiveAdapter<ItemT, ItemDataT, ViewT extends View>
 
     @Override
     public ViewHolder<ViewT> onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder<>(onCreateView(parent));
+        final ViewT view = onCreateView(parent);
+
+        if (view.getLayoutParams() == null) {
+            view.setLayoutParams(new RecyclerView.LayoutParams(
+                    RecyclerView.LayoutParams.MATCH_PARENT,
+                    RecyclerView.LayoutParams.WRAP_CONTENT
+            ));
+        }
+
+        return new ViewHolder<>(view);
     }
 
     @Override
