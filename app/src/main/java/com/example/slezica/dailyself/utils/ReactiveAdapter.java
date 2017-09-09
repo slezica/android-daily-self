@@ -2,6 +2,7 @@ package com.example.slezica.dailyself.utils;
 
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.View;
@@ -11,9 +12,10 @@ import com.example.slezica.dailyself.ui.view.ViewHolder;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import io.requery.reactivex.ReactiveResult;
+import io.requery.sql.ResultSetIterator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLException;
 
 public abstract class ReactiveAdapter<ItemT, ItemDataT, ViewT extends View>
         extends RecyclerView.Adapter<ViewHolder<ViewT>> {
@@ -26,7 +28,7 @@ public abstract class ReactiveAdapter<ItemT, ItemDataT, ViewT extends View>
     private Disposable listSub;
     private SparseArray<Disposable> itemSubs;
     
-    private List<ItemT> list;
+    private ResultSetIterator<ItemT> iterator;
 
     public ReactiveAdapter(Context context) {
         this.context = context;
@@ -36,10 +38,9 @@ public abstract class ReactiveAdapter<ItemT, ItemDataT, ViewT extends View>
         mainScheduler = app.getMainScheduler();
 
         itemSubs = new SparseArray<>();
-        list = new ArrayList<>();
     }
 
-    public abstract Observable<List<ItemT>> getItems();
+    public abstract ReactiveResult<ItemT> getItems();
     public abstract Observable<ItemDataT> getItemData(ItemT item);
 
     public abstract ViewT onCreateView(ViewGroup parent);
@@ -48,7 +49,17 @@ public abstract class ReactiveAdapter<ItemT, ItemDataT, ViewT extends View>
 
     @Override
     public int getItemCount() {
-        return list.size();
+        try {
+            return (iterator != null) ? iterator.unwrap(Cursor.class).getCount() : 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return iterator.get(position).hashCode();
     }
 
     @Override
@@ -58,7 +69,7 @@ public abstract class ReactiveAdapter<ItemT, ItemDataT, ViewT extends View>
 
     @Override
     public void onBindViewHolder(ViewHolder<ViewT> holder, int position) {
-        final ItemT item = list.get(position);
+        final ItemT item = iterator.get(position);
 
         removeItemSub(position);
 
@@ -76,12 +87,19 @@ public abstract class ReactiveAdapter<ItemT, ItemDataT, ViewT extends View>
         onUnbindView(holder.getView());
     }
 
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        stop();
+    }
+
     public void start() {
         if (listSub == null) {
             listSub = getItems()
+                    .observableResult()
                     .subscribeOn(backgroundScheduler)
                     .observeOn(mainScheduler)
-                    .subscribe(this::onListReady);
+                    .subscribe(this::onResultChanged);
         }
     }
 
@@ -90,10 +108,27 @@ public abstract class ReactiveAdapter<ItemT, ItemDataT, ViewT extends View>
             listSub.dispose();
             listSub = null;
         }
+
+        if (iterator != null) {
+            iterator.close();
+            iterator = null;
+        }
     }
 
-    private void onListReady(List<ItemT> newList) {
-        list = newList;
+    private boolean isActive() {
+        return (listSub != null);
+    }
+
+    private void onResultChanged(ReactiveResult<ItemT> newResult) {
+        if (! isActive()) {
+            return;
+        }
+
+        if (iterator != null) {
+            iterator.close();
+        }
+
+        iterator = (ResultSetIterator<ItemT>) newResult.iterator();
         notifyDataSetChanged();
     }
 

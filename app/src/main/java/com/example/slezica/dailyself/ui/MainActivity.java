@@ -96,11 +96,8 @@ public class MainActivity extends BaseActivity {
         }
 
         @Override
-        public Observable<List<Pursuit>> getItems() {
-            return dataStore.select(Pursuit.class)
-                    .get()
-                    .observableResult()
-                    .map(ReactiveResult::toList);
+        public ReactiveResult<Pursuit> getItems() {
+            return dataStore.select(Pursuit.class).get();
         }
 
         @Override
