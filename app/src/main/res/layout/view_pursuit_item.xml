@@ -43,7 +43,7 @@
                 android:id="@+id/add_entry"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:background="@drawable/ic_add_black_24dp"
+                android:background="@drawable/ic_add_circle_black_24dp"
                 />
     </LinearLayout>
 

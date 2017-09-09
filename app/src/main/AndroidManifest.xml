@@ -23,11 +23,13 @@
         <activity
                 android:name=".ui.NewPursuitActivity"
                 android:parentActivityName=".ui.MainActivity"
+                android:windowSoftInputMode="adjustResize"
                 />
 
         <activity
                 android:name=".ui.NewPursuitEntryActivity"
                 android:parentActivityName=".ui.MainActivity"
+                android:windowSoftInputMode="adjustResize"
                 />
 
         <activity
