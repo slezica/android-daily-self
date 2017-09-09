@@ -3,7 +3,6 @@ package com.example.slezica.dailyself.ui.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -37,17 +36,19 @@ public class PursuitItem extends BaseView {
     LineChart chart;
 
     Pursuit pursuit;
+
+    Callback1<Pursuit> onDetailClick;
     Callback1<Pursuit> onAddEntryClick;
 
     public PursuitItem(@NonNull Context context) {
         super(context);
     }
 
-    public PursuitItem(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public PursuitItem(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PursuitItem(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PursuitItem(@NonNull Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -57,8 +58,23 @@ public class PursuitItem extends BaseView {
     }
 
     @OnClick(R.id.add_entry)
-    public void onAddEntryClick() {
+    protected void onAddEntryClick() {
         if (onAddEntryClick != null) onAddEntryClick.call(pursuit);
+    }
+
+    @OnClick(R.id.chart)
+    protected void onChartClick() {
+        if (onDetailClick != null) onDetailClick.call(pursuit);
+    }
+
+    @OnClick(R.id.name)
+    protected void onNameClick() {
+        if (onDetailClick != null) onDetailClick.call(pursuit);
+    }
+
+    @OnClick(R.id.latest_entry)
+    protected void onLatestEntryClick() {
+        if (onDetailClick != null) onDetailClick.call(pursuit);
     }
 
     public void setPursuit(Pursuit pursuit) {
@@ -70,7 +86,7 @@ public class PursuitItem extends BaseView {
     }
 
     public void setPursuitEntries(List<PursuitEntry> entries) {
-        if (entries.size() == 0) {
+        if (entries == null || entries.size() == 0) {
             setLatestEntry(null);
             setChartEntries(null);
             return;
@@ -133,6 +149,10 @@ public class PursuitItem extends BaseView {
 
     public void setOnAddEntryClick(Callback1<Pursuit> onAddEntryClick) {
         this.onAddEntryClick = onAddEntryClick;
+    }
+
+    public void setOnDetailClick(Callback1<Pursuit> onDetailClick) {
+        this.onDetailClick = onDetailClick;
     }
 
     private String formatDatetime(ZonedDateTime datetime) {

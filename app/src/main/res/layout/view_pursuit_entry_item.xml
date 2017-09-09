@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="8dp">
+
+    <TextView
+            android:id="@+id/score"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:background="@drawable/circle"
+            android:textSize="20sp"
+            tools:text="8"
+            />
+
+    <LinearLayout
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+        <TextView
+                android:id="@+id/datetime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                tools:text="2 years ago"
+                />
+
+        <TextView
+                android:id="@+id/comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                tools:text="Foo Bar Baz!"
+                />
+    </LinearLayout>
+</LinearLayout>

@@ -72,6 +72,13 @@ public class MainActivity extends BaseActivity {
         pursuitAdapter.stop();
     }
 
+    protected void onPursuitDetailClick(Pursuit pursuit) {
+        final Intent intent = new Intent(this, PursuitDetailActivity.class)
+                .putExtra(NewPursuitEntryActivity.PURSUIT_ID, pursuit.getId());
+
+        startActivity(intent);
+    }
+
     protected void onPursuitAddEntryClick(Pursuit pursuit) {
         final Intent intent = new Intent(this, NewPursuitEntryActivity.class)
                 .putExtra(NewPursuitEntryActivity.PURSUIT_ID, pursuit.getId());
@@ -123,6 +130,7 @@ public class MainActivity extends BaseActivity {
             itemView.setPursuit(itemData.pursuit);
             itemView.setPursuitEntries(itemData.entries);
 
+            itemView.setOnDetailClick(MainActivity.this::onPursuitDetailClick);
             itemView.setOnAddEntryClick(MainActivity.this::onPursuitAddEntryClick);
         }
 
